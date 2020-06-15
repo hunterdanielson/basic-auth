@@ -6,6 +6,8 @@ const connect = require('../lib/utils/connect');
 const request = require('supertest');
 const app = require('../lib/app');
 const User = require('../lib/models/User');
+const Auction = require('../lib/models/Auction');
+const { use } = require('../lib/routes/auth');
 
 
 describe('basic-auth routes', () => {
@@ -44,6 +46,34 @@ describe('basic-auth routes', () => {
         expect(res.body).toEqual({
           _id: expect.anything(),
           user: user.id,
+          title: 'fake title',
+          description: 'fake desc',
+          quantity: 5,
+          endDate: expect.anything(),
+          __v: 0
+        });
+      });
+  });
+
+  it('gets a auction by id via GET', async() => {
+    const myAuction = await Auction.create({
+      user: user.id,
+      title: 'fake title',
+      description: 'fake desc',
+      quantity: 5,
+      endDate: Date.now()
+    });
+    return request(app)
+      .get(`/api/v1/auctions/${myAuction._id}`)
+      .auth('fake@fake.com', 'idk')
+      .then(res => {
+        expect(res.body).toEqual({
+          _id: expect.anything(),
+          user: {
+            _id: user.id,
+            email: user.email
+          },
+          bids: [],
           title: 'fake title',
           description: 'fake desc',
           quantity: 5,
