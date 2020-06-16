@@ -33,7 +33,7 @@ describe('bid routes', () => {
       title: 'fake title',
       description: 'fake desc',
       quantity: 5,
-      endDate: Date.now()
+      endDate: '160000000000'
     });
   });
 
@@ -42,7 +42,7 @@ describe('bid routes', () => {
     return mongod.stop();
   });
 
-  it('makes a bid via POST', () => {
+  it('does not makes a bid if closed via POST', () => {
     return request(app)
       .post('/api/v1/bids')
       .auth('fake@fake.com', 'idk')
@@ -54,11 +54,35 @@ describe('bid routes', () => {
       })
       .then(res => {
         expect(res.body).toEqual({
+          message: 'Auction has ended',
+          status: 500
+        });
+      });
+  });
+  it('makes a bid via POST', async() => {
+    const openAuction = await Auction.create({
+      user: user.id,
+      title: 'fake title',
+      description: 'fake desc',
+      quantity: 5,
+      endDate: '16000'
+    });
+    return request(app)
+      .post('/api/v1/bids')
+      .auth('fake@fake.com', 'idk')
+      .send({
+        auction: openAuction._id,
+        price: '$5',
+        quantity: 3,
+        accepted: false
+      })
+      .then(res => {
+        expect(res.body).toEqual({
           _id: expect.anything(),
           price: '$5',
           quantity: 3,
           accepted: false,
-          auction: auction.id,
+          auction: openAuction.id,
           user: user.id
         });
       });
