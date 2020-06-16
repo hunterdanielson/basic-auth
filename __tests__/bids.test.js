@@ -65,7 +65,7 @@ describe('bid routes', () => {
       title: 'fake title',
       description: 'fake desc',
       quantity: 5,
-      endDate: '16000'
+      endDate: '1652268917964'
     });
     return request(app)
       .post('/api/v1/bids')
