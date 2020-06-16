@@ -7,8 +7,6 @@ const request = require('supertest');
 const app = require('../lib/app');
 const User = require('../lib/models/User');
 const Auction = require('../lib/models/Auction');
-const { use } = require('../lib/routes/auth');
-
 
 describe('basic-auth routes', () => {
   beforeAll(async() => {
@@ -83,7 +81,7 @@ describe('basic-auth routes', () => {
       });
   });
   it('gets all auctions via GET', async() => {
-    const myAuction = await Auction.create({
+    await Auction.create({
       user: user.id,
       title: 'fake title',
       description: 'fake desc',

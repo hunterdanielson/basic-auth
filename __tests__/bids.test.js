@@ -72,14 +72,14 @@ describe('bid routes', () => {
       .auth('fake@fake.com', 'idk')
       .send({
         auction: openAuction._id,
-        price: '$5',
+        price: 5,
         quantity: 3,
         accepted: false
       })
       .then(res => {
         expect(res.body).toEqual({
           _id: expect.anything(),
-          price: '$5',
+          price: 5,
           quantity: 3,
           accepted: false,
           auction: openAuction.id,
@@ -91,7 +91,7 @@ describe('bid routes', () => {
     const bid = await Bid.create({
       user: user._id,
       auction: auction._id,
-      price: '$5',
+      price: 5,
       quantity: 3,
       accepted: false
     });
@@ -110,7 +110,7 @@ describe('bid routes', () => {
             description: auction.description, 
             title: auction.title 
           },
-          price: '$5',
+          price: 5,
           quantity: 3,
           accepted: false
         });
@@ -120,7 +120,7 @@ describe('bid routes', () => {
     const bid = await Bid.create({
       user: user._id,
       auction: auction._id,
-      price: '$5',
+      price: 5,
       quantity: 3,
       accepted: false
     });
@@ -139,7 +139,7 @@ describe('bid routes', () => {
             description: auction.description, 
             title: auction.title 
           },
-          price: '$5',
+          price: 5,
           quantity: 3,
           accepted: false
         });
