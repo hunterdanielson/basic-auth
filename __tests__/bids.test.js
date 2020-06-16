@@ -7,7 +7,7 @@ const request = require('supertest');
 const app = require('../lib/app');
 const User = require('../lib/models/User');
 const Auction = require('../lib/models/Auction');
-const Bids = require('../lib/models/Bid');
+const Bid = require('../lib/models/Bid');
 
 
 describe('bid routes', () => {
@@ -21,10 +21,19 @@ describe('bid routes', () => {
   });
 
   let user;
+  let auction;
   beforeEach(async() => {
     user = await User.create({
       email: 'fake@fake.com',
       password: 'idk'
+    });
+
+    auction = await Auction.create({
+      user: user.id,
+      title: 'fake title',
+      description: 'fake desc',
+      quantity: 5,
+      endDate: Date.now()
     });
   });
 
@@ -38,6 +47,7 @@ describe('bid routes', () => {
       .post('/api/v1/bids')
       .auth('fake@fake.com', 'idk')
       .send({
+        auction: auction._id,
         price: '$5',
         quantity: 3,
         accepted: false
@@ -48,7 +58,66 @@ describe('bid routes', () => {
           price: '$5',
           quantity: 3,
           accepted: false,
-          __v: 0
+          auction: auction.id,
+          user: user.id
+        });
+      });
+  });
+  it('can get a bid by id via GET', async() => {
+    const bid = await Bid.create({
+      user: user._id,
+      auction: auction._id,
+      price: '$5',
+      quantity: 3,
+      accepted: false
+    });
+    return request(app)
+      .get(`/api/v1/bids/${bid._id}`)
+      .auth('fake@fake.com', 'idk')
+      .then(res => {
+        expect(res.body).toEqual({
+          _id: expect.anything(),
+          user: { 
+            _id: user.id, 
+            email: user.email 
+          },
+          auction: { 
+            _id: auction.id, 
+            description: auction.description, 
+            title: auction.title 
+          },
+          price: '$5',
+          quantity: 3,
+          accepted: false
+        });
+      });
+  });
+  it('can delete a bid via DELETE', async() => {
+    const bid = await Bid.create({
+      user: user._id,
+      auction: auction._id,
+      price: '$5',
+      quantity: 3,
+      accepted: false
+    });
+    return request(app)
+      .delete(`/api/v1/bids/${bid._id}`)
+      .auth('fake@fake.com', 'idk')
+      .then(res => {
+        expect(res.body).toEqual({
+          _id: expect.anything(),
+          user: { 
+            _id: user.id, 
+            email: user.email 
+          },
+          auction: { 
+            _id: auction.id, 
+            description: auction.description, 
+            title: auction.title 
+          },
+          price: '$5',
+          quantity: 3,
+          accepted: false
         });
       });
   });

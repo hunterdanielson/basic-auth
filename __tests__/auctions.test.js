@@ -82,4 +82,27 @@ describe('basic-auth routes', () => {
         });
       });
   });
+  it('gets all auctions via GET', async() => {
+    const myAuction = await Auction.create({
+      user: user.id,
+      title: 'fake title',
+      description: 'fake desc',
+      quantity: 5,
+      endDate: Date.now()
+    });
+    return request(app)
+      .get('/api/v1/auctions')
+      .auth('fake@fake.com', 'idk')
+      .then(res => {
+        expect(res.body).toEqual([{
+          _id: expect.anything(),
+          title: 'fake title',
+          description: 'fake desc',
+          quantity: 5,
+          endDate: expect.anything(),
+          user: user.id,
+          __v: 0
+        }]);
+      });
+  });
 });

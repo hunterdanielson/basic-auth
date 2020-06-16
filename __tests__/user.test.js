@@ -32,8 +32,7 @@ describe('basic-auth routes', () => {
       .then(res => {
         expect(res.body).toEqual({
           _id: expect.anything(),
-          email: 'fake@fake.com',
-          passwordHash: expect.anything()
+          email: 'fake@fake.com'
         });
       });
   });
